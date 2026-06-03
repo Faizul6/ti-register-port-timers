@@ -1,0 +1,12 @@
+[
+   {
+      "directory" : "C:/Users/faizu/workspace_ccstheia/timerbased-ultrasonic-sensor-led-pendulum/Debug",
+      "command"   : "clang++ -I\"C:/Users/faizu/workspace_ccstheia/timerbased-ultrasonic-sensor-led-pendulum\" -I\"C:/TI/TivaWare_C_Series-2.2.0.295\" -I\"C:/TI/ti-cgt-arm_20.2.4.LTS/include\" -Dccs=\"ccs\" -DPART_TM4C1294NCPDT -xc",
+      "file"      : "C:/Users/faizu/workspace_ccstheia/timerbased-ultrasonic-sensor-led-pendulum/main.c"
+   },
+   {
+      "directory" : "C:/Users/faizu/workspace_ccstheia/timerbased-ultrasonic-sensor-led-pendulum/Debug",
+      "command"   : "clang++ -I\"C:/Users/faizu/workspace_ccstheia/timerbased-ultrasonic-sensor-led-pendulum\" -I\"C:/TI/TivaWare_C_Series-2.2.0.295\" -I\"C:/TI/ti-cgt-arm_20.2.4.LTS/include\" -Dccs=\"ccs\" -DPART_TM4C1294NCPDT -xc",
+      "file"      : "C:/Users/faizu/workspace_ccstheia/timerbased-ultrasonic-sensor-led-pendulum/tm4c1294ncpdt_startup_ccs.c"
+   }
+]
