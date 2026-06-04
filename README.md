@@ -4,7 +4,7 @@ This repository features my work on two bare-metal C implementations of HC-SR04 
 
 ---
 
-## Hardware Setup & Lab
+## Hardware Setup & Lab (below)
 
 <img src="images/debug-sensor.jpeg" width="500" alt="TM4C1294 LaunchPad with HC-SR04 ultrasonic sensor wired on mini breadboard"/>
 
@@ -120,15 +120,18 @@ Combines distance measurement with a physical pendulum input and LED output — 
 
 Project 2 only printed distance over serial. Project 3 adds two new interrupt sources — Port K for pendulum input and Timer2 for LED auto-off — making it a fully interrupt-driven system with three concurrent timers and two GPIO interrupt handlers running simultaneously.
 
-### New images
 
-![Full lab setup with TM4C1294, breakout board, LED pendulum module and oscilloscope](images/lab-full-setup.jpeg)
+
+<img src="images/lab-full-setup.jpeg" width="500" alt="Full lab setup with TM4C1294, breakout board, LED pendulum module and oscilloscope"/>
+
 *Complete lab setup — TM4C1294 on breakout board, Swinging LED module (left), oscilloscope monitoring signals*
 
-![LED bar graph lit showing distance output on pendulum swing](images/lab-led-output.jpeg)
+<img src="images/lab-led-output.jpeg" width="500" alt="LED bar graph lit showing distance output on pendulum swing"/>
+
 *LED bar graph active during pendulum trigger — all 8 LEDs lit, Timer2 counting down to auto-off*
 
-![Tektronix oscilloscope showing TRIG pulse and ECHO response waveforms](images/oscilloscope-trig-echo.png)
+<img src="images/oscilloscope-trig-echo.png" width="500" alt="Tektronix oscilloscope showing TRIG pulse and ECHO response waveforms"/>
+
 *Tektronix oscilloscope capture of TRIG and ECHO timing — period 453ms matching Timer0A 0.5s interval*
 
 ### Pin connections
