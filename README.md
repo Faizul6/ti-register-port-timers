@@ -6,11 +6,9 @@ This repository features my work on two bare-metal C implementations of HC-SR04 
 
 ## Hardware Setup & Lab
 
-![TM4C1294 LaunchPad with HC-SR04 ultrasonic sensor wired on breadboard](images/debug-sensor.jpeg)
-*TM4C1294 Connected LaunchPad with HC-SR04 ultrasonic sensor wired on a mini breadboard*
+<img src="images/debug-sensor.jpeg" width="500" alt="TM4C1294 LaunchPad with HC-SR04 ultrasonic sensor wired on mini breadboard"/>
 
-![Rohde & Schwarz RTB24 oscilloscope showing TRIG and ECHO pulse waveforms](images/reading-generated-sensor.jpeg)
-*Rohde & Schwarz RTB24 oscilloscope capturing the TRIG and ECHO signal timing during lab validation*
+
 
 ---
 
