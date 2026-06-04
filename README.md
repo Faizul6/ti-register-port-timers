@@ -102,16 +102,61 @@ Continuously measures distance using the HC-SR04 sensor and prints the result ov
 
 ---
 
+## Project 3 — Interrupt-Driven Ultrasonic Sensor with LED Pendulum
+
+**Folder:** `interruptbased-ultrasonic-sensor-led-pendulum/`
+
+### What it does
+
+Combines distance measurement with a physical pendulum input and LED output — all driven by interrupts. The HC-SR04 measures distance continuously. When the pendulum swings and triggers Port K, the 8 LEDs on Port M light up and stay on for a duration proportional to the measured distance, then turn off automatically via a third timer interrupt.
+
+### How it works
+
+- **Timer0A interrupt (periodic, 0.5s):** Fires the HC-SR04 TRIG pulse every 500ms from inside the ISR — same as Project 2.
+- **GPIO Port D interrupt (both-edge on PD1):** Captures ECHO rising and falling edges. On rising edge, Timer1 resets and starts. On falling edge, Timer1 stops and distance is computed: `distance_cm = (elapsed_ticks / 16.0) / 58.0`
+- **GPIO Port K interrupt (both-edge on PK0):** Detects the pendulum swing. On rising edge, all 8 LEDs turn on and Timer2 is loaded with a timeout proportional to distance: `load = ceil((distance_cm * 60 / 100) * 16000)`. Timer2 then counts down and automatically turns the LEDs off via its own ISR.
+- **Timer2A interrupt:** Fires when the LED display timeout expires and clears all LEDs — no busy-wait, no blocking.
+- **Timer1** runs as a free-running up-counter used purely for ECHO timestamping.
+
+### Key addition vs Project 2
+
+Project 2 only printed distance over serial. Project 3 adds two new interrupt sources — Port K for pendulum input and Timer2 for LED auto-off — making it a fully interrupt-driven system with three concurrent timers and two GPIO interrupt handlers running simultaneously.
+
+### New images
+
+![Full lab setup with TM4C1294, breakout board, LED pendulum module and oscilloscope](images/lab-full-setup.jpeg)
+*Complete lab setup — TM4C1294 on breakout board, Swinging LED module (left), oscilloscope monitoring signals*
+
+![LED bar graph lit showing distance output on pendulum swing](images/lab-led-output.jpeg)
+*LED bar graph active during pendulum trigger — all 8 LEDs lit, Timer2 counting down to auto-off*
+
+![Tektronix oscilloscope showing TRIG pulse and ECHO response waveforms](images/oscilloscope-trig-echo.png)
+*Tektronix oscilloscope capture of TRIG and ECHO timing — period 453ms matching Timer0A 0.5s interval*
+
+### Pin connections
+
+| Signal | TM4C Pin |
+|---|---|
+| HC-SR04 TRIG | PD0 |
+| HC-SR04 ECHO | PD1 |
+| Pendulum input | PK0 |
+| LEDs (bar graph) | PM0 – PM7 |
+
+---
+
 ## Key Differences Between Projects
 
-| Feature | Project 1 (Timer-Based) | Project 2 (Interrupt-Driven) |
-|---|---|---|
-| Timing method | Polling (busy-wait) | ISR-driven |
-| CPU blocked during measurement | Yes | No |
-| TRIG generation | Manual in main loop | Timer0A ISR |
-| ECHO capture | Polling GPIO in main loop | GPIO edge interrupt |
-| Output | 8-LED bar graph | Serial printf |
-| Complexity | Lower | Higher |
+| Feature | Project 1 (Timer-Based) | Project 2 (Interrupt-Driven) | Project 3 (Full Interrupt + Pendulum) |
+|---|---|---|---|
+| Timing method | Polling (busy-wait) | ISR-driven | ISR-driven |
+| CPU blocked during measurement | Yes | No | No |
+| TRIG generation | Manual in main loop | Timer0A ISR | Timer0A ISR |
+| ECHO capture | Polling GPIO | GPIO edge interrupt | GPIO edge interrupt |
+| Output | 8-LED bar graph | Serial printf | 8-LED bar graph (timed auto-off) |
+| Pendulum input | Hardware polling | None | Port K interrupt |
+| LED auto-off | No | N/A | Timer2A interrupt |
+| Active interrupt sources | 0 | 2 | 4 |
+| Complexity | Lower | Medium | Higher |
 
 ---
 
