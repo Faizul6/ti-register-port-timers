@@ -1,14 +1,12 @@
-# TM4C1294 Ultrasonic Sensor Projects
+# TM4C1294 Projects
 
-This repository features my work on two bare-metal C implementations of HC-SR04 ultrasonic distance measurement on the **Texas Instruments TM4C1294NCPDT** microcontroller, built using Code Composer Studio (CCS). Both projects tackle the same sensing problem — measuring distance and reacting to it in real time — but use fundamentally different hardware timing strategies: a polling/timer-based approach and a fully interrupt-driven approach. The goal was to understand the trade-offs between blocking and non-blocking embedded architectures at the register level, without any hardware abstraction libraries.
+This repository features my bare-metal C work on the **Texas Instruments TM4C1294NCPDT** microcontroller, built using Code Composer Studio (CCS). The projects cover three areas: ultrasonic distance sensing with different timing architectures, and UART serial communication with a PC terminal. Across all projects the goal was the same — work directly at the register level, no hardware abstraction libraries, and understand exactly what is happening in the hardware.
 
 ---
 
-## Hardware Setup & Lab (below)
+## Hardware Setup & Lab
 
 <img src="images/debug-sensor.jpeg" width="500" alt="TM4C1294 LaunchPad with HC-SR04 ultrasonic sensor wired on mini breadboard"/>
-
-
 
 ---
 
@@ -18,6 +16,7 @@ This repository features my work on two bare-metal C implementations of HC-SR04 
 |---|---|
 | Microcontroller | TI Tiva TM4C1294NCPDT (ARM Cortex-M4F, 120 MHz) |
 | Ultrasonic Sensor | HC-SR04 |
+| Serial Interface | RS-232 Driver/Receiver Board (DM-Labor FH Hamburg) |
 | IDE | Code Composer Studio (CCS) |
 | Clock | 16 MHz system clock (SYSCLK) |
 
@@ -120,8 +119,6 @@ Combines distance measurement with a physical pendulum input and LED output — 
 
 Project 2 only printed distance over serial. Project 3 adds two new interrupt sources — Port K for pendulum input and Timer2 for LED auto-off — making it a fully interrupt-driven system with three concurrent timers and two GPIO interrupt handlers running simultaneously.
 
-
-
 <img src="images/lab-full-setup.jpeg" width="500" alt="Full lab setup with TM4C1294, breakout board, LED pendulum module and oscilloscope"/>
 
 *Complete lab setup — TM4C1294 on breakout board, Swinging LED module (left), oscilloscope monitoring signals*
@@ -145,19 +142,110 @@ Project 2 only printed distance over serial. Project 3 adds two new interrupt so
 
 ---
 
+## UART Protocol Projects
+
+These two projects focus on UART serial communication between the TM4C1294 and a PC terminal. Both use UART6 on Port P (PP0/PP1), configured at the register level without driverlib.
+
+---
+
+### Project 4 — UART Character Transmission (uart-char-TxRx-portp)
+
+**Folder:** `uart-char-TxRx-portp/`
+
+#### What it does
+
+Continuously transmits a single character (ASCII `0x3B` = `;`) from the TM4C1294 over UART6 to a PC terminal. Implements multiple baud rate and data format configurations — testing 9600 bps 7E1, 38400 bps 8O1, and 4800 bps 7N2 alongside the default 115200 bps 8N1.
+
+#### How it works
+
+- UART6 TX configured on PP1 via alternate function (`AFSEL`, `PCTL = 0x10`)
+- Baud rate divisors calculated manually: `BRD = fclk / (16 * baud)` — integer part to `IBRD`, fractional remainder to `FBRD`
+- `LCRH` register configures word length, parity, and stop bits (e.g. `0x48` for 7E1, `0x60` for 8N1)
+- Main loop polls `UART6_FR_R` TXFF flag before writing to `UART6_DR_R`
+
+#### Key registers configured
+
+| Register | Purpose |
+|---|---|
+| `SYSCTL_RCGCUART_R` | Enable UART6 clock |
+| `UART6_IBRD_R` | Integer baud rate divisor |
+| `UART6_FBRD_R` | Fractional baud rate divisor |
+| `UART6_LCRH_R` | Word length, parity, stop bits |
+| `UART6_CTL_R` | Enable TX and UART |
+| `UART6_FR_R` | TX FIFO full flag (polling) |
+
+#### Lab setup and oscilloscope captures
+
+<img src="images/lab-setup.jpeg" width="500" alt="Full lab setup showing TM4C1294 on breakout board with oscilloscope"/>
+
+*HAW Hamburg lab setup — TM4C1294 on breakout board, oscilloscope probing UART TX/RX lines*
+
+<img src="images/calculation-to-signal-generation.jpeg" width="500" alt="RS-232 line driver board with handwritten baud rate calculations"/>
+
+*RS-232 Driver/Receiver board (DM-Labor FH Hamburg) with handwritten IBRD/FBRD derivations for multiple baud rates*
+
+<img src="images/oscilloscope-uart-single.png" width="500" alt="Tektronix oscilloscope showing single UART TX pulse"/>
+
+*Single character UART TX pulse — Tektronix oscilloscope capture*
+
+<img src="images/oscilloscope-uart-txrx.png" width="500" alt="Two-channel oscilloscope capture showing TX and RX simultaneously"/>
+
+*Two-channel capture — UART TX (Ch1) and RX (Ch2) simultaneously, bidirectional communication verified*
+
+---
+
+### Project 5 — UART Terminal with LED Command Decoder (terminal-com8-test)
+
+**Folder:** `terminal-com8-test/`
+
+#### What it does
+
+Full bidirectional UART terminal: receives character strings from PuTTY on PC, stores them in a buffer, prints them via `printf`, and decodes `led<+|-><0|1|2|3>` commands to toggle individual LEDs on Port M.
+
+#### How it works
+
+- TX (PP1) and RX (PP0) both configured — `UART6_CTL_R |= 0x0301` enables both
+- Prompt sequence sends `\r\n>` after each command creating a terminal-style interface
+- `read_char()` polls `UART6_FR_R` RXFE flag, stores into `buffer[MAXSIZE]` until `\r` or buffer full, then null-terminates
+- Command decoder parses `led<+|-><0|1|2|3>` and sets or clears bits on `GPIO_PORTM_DATA_R` (PM0–PM3)
+- Invalid commands silently ignored; valid commands toggle the corresponding LED immediately
+
+#### Command syntax
+
+| Command | Action |
+|---|---|
+| `led+0` to `led+3` | Turn on LED PM0–PM3 |
+| `led-0` to `led-3` | Turn off LED PM0–PM3 |
+
+#### Pin connections
+
+| Signal | TM4C Pin |
+|---|---|
+| UART6 TX | PP1 |
+| UART6 RX | PP0 |
+| LEDs | PM0 – PM3 |
+
+<img src="images/quick-prototyping.jpeg" width="500" alt="TM4C1294 on breadboard with LEDs for command decoder testing"/>
+
+*Quick prototyping — TM4C1294 with breadboard LEDs on Port M for command decoder validation*
+
+<img src="images/oscilloscope-uart-highspeed.png" width="500" alt="High-speed UART signal capture at 15.63MHz"/>
+
+*High-speed UART signal capture at 15.63MHz — TX and RX during active terminal communication*
+
+---
+
 ## Key Differences Between Projects
 
-| Feature | Project 1 (Timer-Based) | Project 2 (Interrupt-Driven) | Project 3 (Full Interrupt + Pendulum) |
-|---|---|---|---|
-| Timing method | Polling (busy-wait) | ISR-driven | ISR-driven |
-| CPU blocked during measurement | Yes | No | No |
-| TRIG generation | Manual in main loop | Timer0A ISR | Timer0A ISR |
-| ECHO capture | Polling GPIO | GPIO edge interrupt | GPIO edge interrupt |
-| Output | 8-LED bar graph | Serial printf | 8-LED bar graph (timed auto-off) |
-| Pendulum input | Hardware polling | None | Port K interrupt |
-| LED auto-off | No | N/A | Timer2A interrupt |
-| Active interrupt sources | 0 | 2 | 4 |
-| Complexity | Lower | Medium | Higher |
+| Feature | P1 Timer-Based | P2 Interrupt | P3 Interrupt + Pendulum | P4 UART TX | P5 UART Terminal |
+|---|---|---|---|---|---|
+| Timing method | Polling | ISR-driven | ISR-driven | Polling | Polling |
+| CPU blocked | Yes | No | No | Yes | Yes |
+| Output | LED bar graph | Serial printf | LED bar (timed) | UART TX char | UART terminal |
+| Active interrupts | 0 | 2 | 4 | 0 | 0 |
+| Bidirectional UART | No | No | No | No | Yes |
+| Command decoding | No | No | No | No | Yes |
+| Complexity | Low | Medium | High | Low | Medium |
 
 ---
 

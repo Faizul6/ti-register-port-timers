@@ -1,0 +1,12 @@
+[
+   {
+      "directory" : "C:/Users/Student/workspace_ccstheia/lab-terminal-com8-test/Debug",
+      "command"   : "clang++ -I\"C:/Users/Student/workspace_ccstheia/lab-terminal-com8-test\" -I\"C:/ti/TivaWare_C_Series-2.2.0.295\" -I\"C:/ti/ti-cgt-arm_20.2.4.LTS/include\" -Dccs=\"ccs\" -DPART_TM4C1294NCPDT -xc",
+      "file"      : "C:/Users/Student/workspace_ccstheia/lab-terminal-com8-test/main.c"
+   },
+   {
+      "directory" : "C:/Users/Student/workspace_ccstheia/lab-terminal-com8-test/Debug",
+      "command"   : "clang++ -I\"C:/Users/Student/workspace_ccstheia/lab-terminal-com8-test\" -I\"C:/ti/TivaWare_C_Series-2.2.0.295\" -I\"C:/ti/ti-cgt-arm_20.2.4.LTS/include\" -Dccs=\"ccs\" -DPART_TM4C1294NCPDT -xc",
+      "file"      : "C:/Users/Student/workspace_ccstheia/lab-terminal-com8-test/tm4c1294ncpdt_startup_ccs.c"
+   }
+]
