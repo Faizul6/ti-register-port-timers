@@ -6,8 +6,9 @@ This repository features my bare-metal C work on the **Texas Instruments TM4C129
 
 ## Hardware Setup & Lab
 
-<img src="images/debug-sensor.jpeg" width="500" alt="TM4C1294 LaunchPad with HC-SR04 ultrasonic sensor wired on mini breadboard"/>
+<img src="images/lab-full-setup.jpeg" width="500" alt="Full lab setup with TM4C1294, breakout board, LED pendulum module and oscilloscope"/>
 
+*Complete lab setup — TM4C1294 on breakout board, Swinging LED module (left), oscilloscope monitoring signals*
 ---
 
 ## Hardware
@@ -119,9 +120,9 @@ Combines distance measurement with a physical pendulum input and LED output — 
 
 Project 2 only printed distance over serial. Project 3 adds two new interrupt sources — Port K for pendulum input and Timer2 for LED auto-off — making it a fully interrupt-driven system with three concurrent timers and two GPIO interrupt handlers running simultaneously.
 
-<img src="images/lab-full-setup.jpeg" width="500" alt="Full lab setup with TM4C1294, breakout board, LED pendulum module and oscilloscope"/>
+<img src="images/debug-sensor.jpeg" width="500" alt="TM4C1294 LaunchPad with HC-SR04 ultrasonic sensor wired on mini breadboard"/>
 
-*Complete lab setup — TM4C1294 on breakout board, Swinging LED module (left), oscilloscope monitoring signals*
+*Quick prototyping setup — TM4C1294 LaunchPad with HC-SR04 sensor on mini breadboard*
 
 <img src="images/lab-led-output.jpeg" width="500" alt="LED bar graph lit showing distance output on pendulum swing"/>
 
