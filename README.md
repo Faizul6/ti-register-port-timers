@@ -185,9 +185,6 @@ Continuously transmits a single character (ASCII `0x3B` = `;`) from the TM4C1294
 
 *RS-232 Driver/Receiver board (DM-Labor FH Hamburg) with handwritten IBRD/FBRD derivations for multiple baud rates*
 
-<img src="images/oscilloscope-uart-single.png" width="500" alt="Tektronix oscilloscope showing single UART TX pulse"/>
-
-*Single character UART TX pulse — Tektronix oscilloscope capture*
 
 <img src="images/oscilloscope-uart-txrx.png" width="500" alt="Two-channel oscilloscope capture showing TX and RX simultaneously"/>
 
