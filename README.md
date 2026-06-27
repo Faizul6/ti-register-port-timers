@@ -242,8 +242,6 @@ Full bidirectional UART terminal: receives character strings from PuTTY on PC, s
 | Output | LED bar graph | Serial printf | LED bar (timed) | UART TX char | UART terminal |
 | Active interrupts | 0 | 2 | 4 | 0 | 0 |
 | Bidirectional UART | No | No | No | No | Yes |
-| Command decoding | No | No | No | No | Yes |
-| Complexity | Low | Medium | High | Low | Medium |
 
 ---
 
